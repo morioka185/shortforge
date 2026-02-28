@@ -1,0 +1,28 @@
+{
+  "id": "burst",
+  "name": "バースト",
+  "description": "中央から爆発するように1文字ずつ出現",
+  "category": "dynamic",
+  "animation": {
+    "unit": "character",
+    "properties": ["opacity", "scale", "rotate"],
+    "keyframes": [
+      { "t": 0.0, "opacity": 0, "scale": 3.0, "rotate": -15 },
+      { "t": 0.4, "opacity": 1, "scale": 0.9, "rotate": 3 },
+      { "t": 0.7, "opacity": 1, "scale": 1.05, "rotate": -1 },
+      { "t": 1.0, "opacity": 1, "scale": 1.0, "rotate": 0 }
+    ],
+    "duration_ms": 400,
+    "delay_per_unit_ms": 40,
+    "easing": "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+  },
+  "default_style": {
+    "font_family": "Noto Sans JP",
+    "font_size": 48,
+    "font_weight": 900,
+    "color": "#FF0050",
+    "outline": { "enabled": true, "color": "#FFFFFF", "width": 3 },
+    "shadow": { "enabled": true, "color": "#00000066", "offset_x": 3, "offset_y": 3, "blur": 6 }
+  },
+  "preview_text": "バースト!"
+}

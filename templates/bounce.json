@@ -1,0 +1,27 @@
+{
+  "id": "bounce",
+  "name": "バウンス",
+  "description": "1文字ずつ跳ねて登場",
+  "category": "dynamic",
+  "animation": {
+    "unit": "character",
+    "properties": ["opacity", "translate_y", "scale"],
+    "keyframes": [
+      { "t": 0.0, "opacity": 0, "translate_y": 40, "scale": 0.3 },
+      { "t": 0.5, "opacity": 1, "translate_y": -12, "scale": 1.05 },
+      { "t": 0.7, "opacity": 1, "translate_y": 4, "scale": 0.97 },
+      { "t": 1.0, "opacity": 1, "translate_y": 0, "scale": 1.0 }
+    ],
+    "duration_ms": 500,
+    "delay_per_unit_ms": 60,
+    "easing": "cubic-bezier(0.34, 1.56, 0.64, 1)"
+  },
+  "default_style": {
+    "font_family": "Dela Gothic One",
+    "font_size": 44,
+    "font_weight": 900,
+    "color": "#FFFC00",
+    "outline": { "enabled": true, "color": "#000000", "width": 3 }
+  },
+  "preview_text": "バウンスアニメ"
+}

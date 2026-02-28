@@ -1,4 +1,4 @@
+pub mod animation;
 pub mod parser;
+pub mod renderer;
 pub mod template;
-// pub mod animation;
-// pub mod renderer;

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SubtitleCue {
     pub index: usize,
     pub start_ms: u64,
@@ -56,4 +56,30 @@ pub struct TelopAnimation {
     pub delay_per_char_ms: Option<u64>,
     #[serde(default)]
     pub easing: Option<String>,
+}
+
+/// Keyframe for animation interpolation
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AnimationKeyframe {
+    pub t: f64,
+    #[serde(default)]
+    pub opacity: Option<f64>,
+    #[serde(default)]
+    pub translate_x: Option<f64>,
+    #[serde(default)]
+    pub translate_y: Option<f64>,
+    #[serde(default)]
+    pub scale: Option<f64>,
+    #[serde(default)]
+    pub rotate: Option<f64>,
+}
+
+/// The computed state of a single character at a given frame
+#[derive(Debug, Clone, Default)]
+pub struct CharRenderState {
+    pub opacity: f64,
+    pub translate_x: f64,
+    pub translate_y: f64,
+    pub scale: f64,
+    pub rotate: f64,
 }

@@ -1,0 +1,26 @@
+{
+  "id": "pop",
+  "name": "ポップ",
+  "description": "1文字ずつポンと拡大して登場",
+  "category": "dynamic",
+  "animation": {
+    "unit": "character",
+    "properties": ["opacity", "scale"],
+    "keyframes": [
+      { "t": 0.0, "opacity": 0, "scale": 0.0 },
+      { "t": 0.6, "opacity": 1, "scale": 1.2 },
+      { "t": 1.0, "opacity": 1, "scale": 1.0 }
+    ],
+    "duration_ms": 300,
+    "delay_per_unit_ms": 50,
+    "easing": "cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+  },
+  "default_style": {
+    "font_family": "Noto Sans JP",
+    "font_size": 42,
+    "font_weight": 900,
+    "color": "#FF6B6B",
+    "outline": { "enabled": true, "color": "#FFFFFF", "width": 2 }
+  },
+  "preview_text": "ポップアップ"
+}

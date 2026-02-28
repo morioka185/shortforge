@@ -6,6 +6,8 @@ pub struct ShortForgeProject {
     pub metadata: ProjectMetadata,
     pub canvas: Canvas,
     pub tracks: Vec<super::timeline::TimelineTrack>,
+    #[serde(default)]
+    pub beat_markers: Vec<BeatMarker>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -29,4 +31,10 @@ pub struct Canvas {
     pub height: u32,
     pub fps: u32,
     pub duration_ms: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BeatMarker {
+    pub time_ms: u64,
+    pub strength: f64,
 }

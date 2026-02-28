@@ -5,6 +5,7 @@ export interface ShortForgeProject {
   metadata: ProjectMetadata;
   canvas: Canvas;
   tracks: TimelineTrack[];
+  beat_markers: BeatMarker[];
 }
 
 export interface ProjectMetadata {
@@ -24,4 +25,9 @@ export interface TimelineTrack {
   id: string;
   type: "video" | "telop" | "audio";
   clips: unknown[];
+}
+
+export interface BeatMarker {
+  time_ms: number;
+  strength: number;
 }

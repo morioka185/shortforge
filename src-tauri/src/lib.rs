@@ -12,6 +12,12 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::telop::get_templates,
             commands::telop::burn_telop,
+            commands::project::create_project,
+            commands::project::save_project,
+            commands::project::load_project,
+            commands::project::probe_media,
+            commands::project::import_media,
+            commands::preview::extract_frame,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

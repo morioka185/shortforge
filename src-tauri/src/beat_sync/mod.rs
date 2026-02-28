@@ -1,2 +1,2 @@
-// pub mod analyzer;
-// pub mod detector;
+pub mod analyzer;
+pub mod detector;

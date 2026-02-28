@@ -3,7 +3,7 @@ mod models;
 mod telop_engine;
 mod video_core;
 mod export_engine;
-// mod beat_sync;
+mod beat_sync;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -23,6 +23,9 @@ pub fn run() {
             commands::export::get_preset,
             commands::export::validate_export,
             commands::export::export_video,
+            commands::beat_sync::detect_beats,
+            commands::beat_sync::get_waveform,
+            commands::beat_sync::snap_time_to_beat,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

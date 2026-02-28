@@ -2,6 +2,8 @@ import { useRef, useCallback } from "react";
 import { useTimelineStore } from "../../stores/timelineStore";
 import { Track } from "./Track";
 import { Playhead } from "./Playhead";
+import { Waveform } from "./Waveform";
+import { BeatMarkers } from "./BeatMarkers";
 import { msToTimecode } from "../../lib/time";
 
 export function Timeline() {
@@ -11,10 +13,15 @@ export function Timeline() {
     isPlaying,
     zoom,
     durationMs,
+    beats,
+    bpm,
+    waveform,
+    snapEnabled,
     setCurrentTime,
     togglePlayPause,
     zoomIn,
     zoomOut,
+    toggleSnap,
   } = useTimelineStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,6 +49,7 @@ export function Timeline() {
   }
 
   const trackHeight = tracks.length * 40 + 24; // 40px per track + ruler
+  const hasAudio = waveform.length > 0;
 
   return (
     <div className="flex flex-col bg-gray-900 border-t border-gray-700">
@@ -56,7 +64,28 @@ export function Timeline() {
         <span className="text-xs text-gray-400 font-mono min-w-[80px]">
           {msToTimecode(currentTimeMs)}
         </span>
+
+        {bpm !== null && (
+          <span className="text-xs text-amber-400 font-mono">
+            {Math.round(bpm)} BPM
+          </span>
+        )}
+
         <div className="flex-1" />
+
+        {beats.length > 0 && (
+          <button
+            onClick={toggleSnap}
+            className={`px-2 py-1 text-xs rounded transition-colors ${
+              snapEnabled
+                ? "bg-amber-600 hover:bg-amber-500 text-white"
+                : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+            }`}
+          >
+            Snap
+          </button>
+        )}
+
         <button
           onClick={zoomOut}
           className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded"
@@ -78,7 +107,7 @@ export function Timeline() {
       <div
         ref={containerRef}
         className="overflow-x-auto overflow-y-auto relative"
-        style={{ maxHeight: "200px" }}
+        style={{ maxHeight: "240px" }}
         onClick={handleTimelineClick}
       >
         {/* Time ruler */}
@@ -109,18 +138,49 @@ export function Timeline() {
             <Track key={track.id} track={track} zoom={zoom} />
           ))}
 
-          {tracks.length === 0 && (
+          {/* Waveform overlay for audio tracks */}
+          {hasAudio && (
+            <div className="flex">
+              <div className="w-24 flex-shrink-0 bg-gray-800 border-r border-gray-700 flex items-center px-2">
+                <span className="text-xs text-gray-400 truncate">Waveform</span>
+              </div>
+              <div
+                className="relative h-10 bg-gray-850"
+                style={{ width: `${totalWidthPx}px` }}
+              >
+                <Waveform
+                  data={waveform}
+                  width={totalWidthPx}
+                  height={40}
+                  color="#22c55e"
+                />
+                {beats.length > 0 && (
+                  <BeatMarkers
+                    beats={beats}
+                    durationMs={durationMs}
+                    width={totalWidthPx}
+                    height={40}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          {tracks.length === 0 && !hasAudio && (
             <div className="flex items-center justify-center h-20 text-gray-500 text-sm">
               メディアをインポートして開始
             </div>
           )}
 
           {/* Playhead overlay */}
-          <div className="absolute top-0 left-24" style={{ height: `${trackHeight}px` }}>
+          <div
+            className="absolute top-0 left-24"
+            style={{ height: `${trackHeight + (hasAudio ? 40 : 0)}px` }}
+          >
             <Playhead
               currentTimeMs={currentTimeMs}
               zoom={zoom}
-              height={trackHeight}
+              height={trackHeight + (hasAudio ? 40 : 0)}
             />
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { BeatInfo } from "../lib/tauri";
 
 export interface TimelineClip {
   id: string;
@@ -25,6 +26,11 @@ interface TimelineState {
   zoom: number;
   selectedClipId: string | null;
   durationMs: number;
+  beats: BeatInfo[];
+  bpm: number | null;
+  waveform: number[];
+  snapEnabled: boolean;
+  snapThresholdMs: number;
   setTracks: (tracks: TimelineTrackData[]) => void;
   addTrack: (track: TimelineTrackData) => void;
   setCurrentTime: (ms: number) => void;
@@ -37,6 +43,9 @@ interface TimelineState {
   setDuration: (ms: number) => void;
   moveClip: (clipId: string, newStartMs: number) => void;
   trimClip: (clipId: string, newStartMs: number, newEndMs: number) => void;
+  setBeats: (beats: BeatInfo[], bpm: number) => void;
+  setWaveform: (data: number[]) => void;
+  toggleSnap: () => void;
 }
 
 const TRACK_COLORS: Record<string, string> = {
@@ -52,6 +61,11 @@ export const useTimelineStore = create<TimelineState>((set) => ({
   zoom: 1,
   selectedClipId: null,
   durationMs: 15000,
+  beats: [],
+  bpm: null,
+  waveform: [],
+  snapEnabled: true,
+  snapThresholdMs: 100,
 
   setTracks: (tracks) => set({ tracks }),
   addTrack: (track) =>
@@ -95,6 +109,10 @@ export const useTimelineStore = create<TimelineState>((set) => ({
         ),
       })),
     })),
+
+  setBeats: (beats, bpm) => set({ beats, bpm }),
+  setWaveform: (data) => set({ waveform: data }),
+  toggleSnap: () => set((s) => ({ snapEnabled: !s.snapEnabled })),
 }));
 
 export { TRACK_COLORS };

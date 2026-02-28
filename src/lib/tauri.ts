@@ -106,3 +106,35 @@ export async function exportVideo(params: {
 }): Promise<string> {
   return invoke("export_video", params);
 }
+
+// Beat Sync
+export interface BeatInfo {
+  time_ms: number;
+  strength: number;
+}
+
+export interface BeatAnalysis {
+  bpm: number;
+  beats: BeatInfo[];
+  sample_rate: number;
+  duration_ms: number;
+}
+
+export async function detectBeats(audioPath: string): Promise<BeatAnalysis> {
+  return invoke("detect_beats", { audioPath });
+}
+
+export async function getWaveform(
+  audioPath: string,
+  numPoints?: number,
+): Promise<number[]> {
+  return invoke("get_waveform", { audioPath, numPoints });
+}
+
+export async function snapTimeToBeat(
+  beats: BeatInfo[],
+  timeMs: number,
+  thresholdMs?: number,
+): Promise<number> {
+  return invoke("snap_time_to_beat", { beats, timeMs, thresholdMs });
+}

@@ -11,8 +11,8 @@
   "max_file_size_mb": 250,
   "bitrate_kbps": 5000,
   "safe_zones": {
-    "top_px": 110,
-    "bottom_px": 260,
-    "right_px": 70
+    "top_px": 200,
+    "bottom_px": 350,
+    "right_px": 100
   }
 }

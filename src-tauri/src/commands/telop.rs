@@ -7,7 +7,10 @@ use tauri::command;
 
 #[command]
 pub fn get_templates(templates_dir: Option<String>) -> Result<Vec<template::TelopTemplate>, String> {
-    let dir = templates_dir.unwrap_or_else(|| "templates".to_string());
+    let dir = templates_dir.unwrap_or_else(|| {
+        let manifest_dir = env!("CARGO_MANIFEST_DIR");
+        format!("{manifest_dir}/../templates")
+    });
     template::load_templates_from_dir(&dir)
 }
 
@@ -21,7 +24,10 @@ pub fn burn_telop(
     bitrate: Option<usize>,
 ) -> Result<String, String> {
     // Load templates and find the selected one
-    let dir = templates_dir.unwrap_or_else(|| "templates".to_string());
+    let dir = templates_dir.unwrap_or_else(|| {
+        let manifest_dir = env!("CARGO_MANIFEST_DIR");
+        format!("{manifest_dir}/../templates")
+    });
     let templates = template::load_templates_from_dir(&dir)?;
     let tmpl = templates
         .iter()

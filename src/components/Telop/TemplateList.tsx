@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTelopStore } from "../../stores/telopStore";
 import { getTemplates } from "../../lib/tauri";
 import type { TelopTemplate } from "../../types/telop";
@@ -11,13 +11,22 @@ const CATEGORY_LABELS: Record<string, string> = {
 export function TemplateList() {
   const { templates, selectedTemplateId, setTemplates, setSelectedTemplate } =
     useTelopStore();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     getTemplates()
-      .then(setTemplates)
-      .catch(() => {
-        // Fallback: load from bundled data
+      .then((t) => {
+        setTemplates(t);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load templates:", err);
+        setError(String(err));
         setTemplates([]);
+        setLoading(false);
       });
   }, [setTemplates]);
 
@@ -61,8 +70,14 @@ export function TemplateList() {
           </div>
         </div>
       ))}
-      {templates.length === 0 && (
+      {loading && (
         <p className="text-xs text-gray-500">テンプレートを読み込み中...</p>
+      )}
+      {!loading && error && (
+        <p className="text-xs text-red-400">読み込みエラー: {error}</p>
+      )}
+      {!loading && !error && templates.length === 0 && (
+        <p className="text-xs text-gray-500">テンプレートが見つかりません</p>
       )}
     </div>
   );

@@ -29,6 +29,13 @@ pub struct OutlineStyle {
     pub enabled: bool,
     pub color: String,
     pub width: f32,
+    /// Stroke join style: "miter", "round", or "bevel". Defaults to "miter".
+    #[serde(default = "default_stroke_join")]
+    pub join: String,
+}
+
+fn default_stroke_join() -> String {
+    "miter".to_string()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

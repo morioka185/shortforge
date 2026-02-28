@@ -153,7 +153,15 @@ pub fn render_telop_on_frame(
                     outline_paint.set_anti_alias(true);
                     outline_paint.set_style(skia_safe::PaintStyle::Stroke);
                     outline_paint.set_stroke_width(outline.width * 2.0);
-                    outline_paint.set_stroke_join(skia_safe::paint::Join::Round);
+                    let join = match outline.join.as_str() {
+                        "round" => skia_safe::paint::Join::Round,
+                        "bevel" => skia_safe::paint::Join::Bevel,
+                        _ => skia_safe::paint::Join::Miter,
+                    };
+                    outline_paint.set_stroke_join(join);
+                    if join == skia_safe::paint::Join::Miter {
+                        outline_paint.set_stroke_miter(4.0);
+                    }
 
                     canvas.draw_str(&char_str, (char_x, char_y), &font, &outline_paint);
                 }

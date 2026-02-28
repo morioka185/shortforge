@@ -67,6 +67,7 @@ impl Default for TelopTemplate {
                     enabled: true,
                     color: "#000000".to_string(),
                     width: 2.0,
+                    join: "miter".to_string(),
                 }),
                 shadow: None,
                 position: None,

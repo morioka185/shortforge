@@ -66,36 +66,62 @@ export function StyleEditor() {
             <span className="text-xs text-gray-400">縁取り</span>
           </label>
           {style.outline.enabled && (
-            <div className="flex items-center gap-2 ml-6">
-              <input
-                type="color"
-                value={style.outline.color}
-                onChange={(e) =>
-                  updateCustomStyle({
-                    outline: { ...style.outline!, color: e.target.value },
-                  })
-                }
-                className="w-6 h-6 rounded border border-gray-600 cursor-pointer"
-              />
-              <input
-                type="range"
-                min="0"
-                max="8"
-                step="0.5"
-                value={style.outline.width}
-                onChange={(e) =>
-                  updateCustomStyle({
-                    outline: {
-                      ...style.outline!,
-                      width: Number(e.target.value),
-                    },
-                  })
-                }
-                className="flex-1 accent-blue-500"
-              />
-              <span className="text-xs text-gray-500">
-                {style.outline.width}px
-              </span>
+            <div className="flex flex-col gap-2 ml-6">
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={style.outline.color}
+                  onChange={(e) =>
+                    updateCustomStyle({
+                      outline: { ...style.outline!, color: e.target.value },
+                    })
+                  }
+                  className="w-6 h-6 rounded border border-gray-600 cursor-pointer"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="8"
+                  step="0.5"
+                  value={style.outline.width}
+                  onChange={(e) =>
+                    updateCustomStyle({
+                      outline: {
+                        ...style.outline!,
+                        width: Number(e.target.value),
+                      },
+                    })
+                  }
+                  className="flex-1 accent-blue-500"
+                />
+                <span className="text-xs text-gray-500">
+                  {style.outline.width}px
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400">結合</span>
+                {(["miter", "round", "bevel"] as const).map((j) => (
+                  <button
+                    key={j}
+                    onClick={() =>
+                      updateCustomStyle({
+                        outline: { ...style.outline!, join: j },
+                      })
+                    }
+                    className={`px-2 py-0.5 text-xs rounded ${
+                      (style.outline?.join ?? "miter") === j
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    }`}
+                  >
+                    {j === "miter"
+                      ? "マイター"
+                      : j === "round"
+                        ? "ラウンド"
+                        : "ベベル"}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>

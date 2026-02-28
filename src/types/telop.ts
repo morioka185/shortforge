@@ -44,6 +44,7 @@ export interface OutlineStyle {
   enabled: boolean;
   color: string;
   width: number;
+  join?: "miter" | "round" | "bevel";
 }
 
 export interface ShadowStyle {

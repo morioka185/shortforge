@@ -1,0 +1,67 @@
+name: Bug Report
+description: バグの報告 / Report a bug
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグの報告ありがとうございます。以下のフォームに記入してください。
+        Thank you for reporting a bug. Please fill out the form below.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description / 説明
+      description: What happened? / 何が起きましたか？
+      placeholder: A clear description of the bug
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce / 再現手順
+      description: How can we reproduce this? / どうすれば再現できますか？
+      placeholder: |
+        1. Open the app
+        2. Click on ...
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior / 期待される動作
+      description: What should have happened? / 本来どう動くべきですか？
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows
+        - Linux
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: ShortForge Version
+      placeholder: e.g. 0.1.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context / 補足情報
+      description: Screenshots, logs, etc.
+    validations:
+      required: false

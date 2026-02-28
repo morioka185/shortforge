@@ -1,0 +1,43 @@
+name: Feature Request
+description: 機能リクエスト / Suggest a new feature
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        機能リクエストありがとうございます！
+        Thank you for suggesting a feature!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / 課題
+      description: What problem does this solve? / どんな課題を解決しますか？
+      placeholder: I'm always frustrated when ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution / 提案
+      description: How should it work? / どう動くべきですか？
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered / 代替案
+      description: Any other approaches you've considered? / 他に考えた方法はありますか？
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context / 補足情報
+      description: Mockups, references, etc.
+    validations:
+      required: false

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { temporal } from "zundo";
 import type { BeatInfo } from "../lib/tauri";
 
 export interface TimelineClip {
@@ -54,65 +55,78 @@ const TRACK_COLORS: Record<string, string> = {
   audio: "#22c55e",
 };
 
-export const useTimelineStore = create<TimelineState>((set) => ({
-  tracks: [],
-  currentTimeMs: 0,
-  isPlaying: false,
-  zoom: 1,
-  selectedClipId: null,
-  durationMs: 15000,
-  beats: [],
-  bpm: null,
-  waveform: [],
-  snapEnabled: true,
-  snapThresholdMs: 100,
+export const useTimelineStore = create<TimelineState>()(
+  temporal(
+    (set) => ({
+      tracks: [],
+      currentTimeMs: 0,
+      isPlaying: false,
+      zoom: 1,
+      selectedClipId: null,
+      durationMs: 15000,
+      beats: [],
+      bpm: null,
+      waveform: [],
+      snapEnabled: true,
+      snapThresholdMs: 100,
 
-  setTracks: (tracks) => set({ tracks }),
-  addTrack: (track) =>
-    set((state) => ({ tracks: [...state.tracks, track] })),
+      setTracks: (tracks) => set({ tracks }),
+      addTrack: (track) =>
+        set((state) => ({ tracks: [...state.tracks, track] })),
 
-  setCurrentTime: (ms) => set({ currentTimeMs: Math.max(0, ms) }),
-  setIsPlaying: (playing) => set({ isPlaying: playing }),
-  togglePlayPause: () => set((s) => ({ isPlaying: !s.isPlaying })),
+      setCurrentTime: (ms) => set({ currentTimeMs: Math.max(0, ms) }),
+      setIsPlaying: (playing) => set({ isPlaying: playing }),
+      togglePlayPause: () => set((s) => ({ isPlaying: !s.isPlaying })),
 
-  setZoom: (zoom) => set({ zoom: Math.max(0.1, Math.min(10, zoom)) }),
-  zoomIn: () => set((s) => ({ zoom: Math.min(10, s.zoom * 1.25) })),
-  zoomOut: () => set((s) => ({ zoom: Math.max(0.1, s.zoom / 1.25) })),
+      setZoom: (zoom) => set({ zoom: Math.max(0.1, Math.min(10, zoom)) }),
+      zoomIn: () => set((s) => ({ zoom: Math.min(10, s.zoom * 1.25) })),
+      zoomOut: () => set((s) => ({ zoom: Math.max(0.1, s.zoom / 1.25) })),
 
-  selectClip: (id) => set({ selectedClipId: id }),
-  setDuration: (ms) => set({ durationMs: ms }),
+      selectClip: (id) => set({ selectedClipId: id }),
+      setDuration: (ms) => set({ durationMs: ms }),
 
-  moveClip: (clipId, newStartMs) =>
-    set((state) => ({
-      tracks: state.tracks.map((track) => ({
-        ...track,
-        clips: track.clips.map((clip) => {
-          if (clip.id !== clipId) return clip;
-          const duration = clip.endMs - clip.startMs;
-          return {
-            ...clip,
-            startMs: Math.max(0, newStartMs),
-            endMs: Math.max(0, newStartMs) + duration,
-          };
-        }),
-      })),
-    })),
+      moveClip: (clipId, newStartMs) =>
+        set((state) => ({
+          tracks: state.tracks.map((track) => ({
+            ...track,
+            clips: track.clips.map((clip) => {
+              if (clip.id !== clipId) return clip;
+              const duration = clip.endMs - clip.startMs;
+              return {
+                ...clip,
+                startMs: Math.max(0, newStartMs),
+                endMs: Math.max(0, newStartMs) + duration,
+              };
+            }),
+          })),
+        })),
 
-  trimClip: (clipId, newStartMs, newEndMs) =>
-    set((state) => ({
-      tracks: state.tracks.map((track) => ({
-        ...track,
-        clips: track.clips.map((clip) =>
-          clip.id === clipId
-            ? { ...clip, startMs: newStartMs, endMs: newEndMs }
-            : clip,
-        ),
-      })),
-    })),
+      trimClip: (clipId, newStartMs, newEndMs) =>
+        set((state) => ({
+          tracks: state.tracks.map((track) => ({
+            ...track,
+            clips: track.clips.map((clip) =>
+              clip.id === clipId
+                ? { ...clip, startMs: newStartMs, endMs: newEndMs }
+                : clip,
+            ),
+          })),
+        })),
 
-  setBeats: (beats, bpm) => set({ beats, bpm }),
-  setWaveform: (data) => set({ waveform: data }),
-  toggleSnap: () => set((s) => ({ snapEnabled: !s.snapEnabled })),
-}));
+      setBeats: (beats, bpm) => set({ beats, bpm }),
+      setWaveform: (data) => set({ waveform: data }),
+      toggleSnap: () => set((s) => ({ snapEnabled: !s.snapEnabled })),
+    }),
+    {
+      limit: 100,
+      partialize: (state) => {
+        // Only track undoable state changes (tracks, clips)
+        // Exclude transient state like currentTimeMs, isPlaying, zoom
+        const { tracks } = state;
+        return { tracks } as TimelineState;
+      },
+    },
+  ),
+);
 
 export { TRACK_COLORS };

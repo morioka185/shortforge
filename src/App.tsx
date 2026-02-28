@@ -5,12 +5,15 @@ import { Preview } from "./components/Preview/Preview";
 import { Timeline } from "./components/Timeline/Timeline";
 import { ExportDialog } from "./components/Export/ExportDialog";
 import { Button } from "./components/Common/Button";
+import { ToastContainer } from "./components/Common/Toast";
 import { useProjectStore } from "./stores/projectStore";
 import { createProject } from "./lib/tauri";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 
 function App() {
   const { project, setProject } = useProjectStore();
   const [exportOpen, setExportOpen] = useState(false);
+  useKeyboardShortcuts();
 
   const handleNewProject = async () => {
     try {
@@ -85,6 +88,7 @@ function App() {
 
       {/* Export Dialog */}
       <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} />
+      <ToastContainer />
     </main>
   );
 }

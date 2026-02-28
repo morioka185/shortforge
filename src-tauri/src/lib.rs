@@ -1,4 +1,5 @@
 mod commands;
+mod errors;
 mod models;
 mod telop_engine;
 mod video_core;

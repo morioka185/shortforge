@@ -1,13 +1,16 @@
+import { useState } from "react";
 import "./App.css";
 import { TelopPanel } from "./components/Telop/TelopPanel";
 import { Preview } from "./components/Preview/Preview";
 import { Timeline } from "./components/Timeline/Timeline";
+import { ExportDialog } from "./components/Export/ExportDialog";
 import { Button } from "./components/Common/Button";
 import { useProjectStore } from "./stores/projectStore";
 import { createProject } from "./lib/tauri";
 
 function App() {
   const { project, setProject } = useProjectStore();
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handleNewProject = async () => {
     try {
@@ -52,7 +55,14 @@ function App() {
         <h1 className="text-sm font-bold text-white mr-4">ShortForge</h1>
         <span className="text-xs text-gray-400">{project.metadata.name}</span>
         <div className="flex-1" />
-        <span className="text-xs text-gray-500">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => setExportOpen(true)}
+        >
+          書き出し
+        </Button>
+        <span className="ml-3 text-xs text-gray-500">
           {project.metadata.platform.replace("_", " ").toUpperCase()}
         </span>
       </header>
@@ -72,6 +82,9 @@ function App() {
 
       {/* Bottom - Timeline */}
       <Timeline />
+
+      {/* Export Dialog */}
+      <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} />
     </main>
   );
 }

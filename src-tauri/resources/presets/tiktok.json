@@ -1,0 +1,19 @@
+{
+  "platform": "tiktok",
+  "display_name": "TikTok",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspect_ratio": "9:16",
+  "max_duration_sec": 180,
+  "recommended_duration_sec": 60,
+  "fps": 30,
+  "codec": "h264",
+  "audio_codec": "aac",
+  "audio_sample_rate": 44100,
+  "max_file_size_mb": 287,
+  "bitrate_kbps": 6000,
+  "safe_zones": {
+    "top_px": 120,
+    "bottom_px": 280,
+    "right_px": 80
+  }
+}

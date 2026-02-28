@@ -1,0 +1,18 @@
+{
+  "platform": "youtube_shorts",
+  "display_name": "YouTube Shorts",
+  "resolution": { "width": 1080, "height": 1920 },
+  "aspect_ratio": "9:16",
+  "max_duration_sec": 60,
+  "fps": 30,
+  "codec": "h264",
+  "audio_codec": "aac",
+  "audio_sample_rate": 44100,
+  "max_file_size_mb": 256,
+  "bitrate_kbps": 8000,
+  "safe_zones": {
+    "top_px": 100,
+    "bottom_px": 200,
+    "right_px": 60
+  }
+}

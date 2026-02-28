@@ -56,3 +56,53 @@ export async function importMedia(
 ): Promise<ShortForgeProject> {
   return invoke("import_media", { project, mediaPath });
 }
+
+// Export Engine
+export interface ExportPreset {
+  platform: string;
+  display_name: string;
+  resolution: { width: number; height: number };
+  aspect_ratio: string;
+  max_duration_sec: number;
+  recommended_duration_sec: number | null;
+  fps: number;
+  codec: string;
+  audio_codec: string;
+  audio_sample_rate: number;
+  max_file_size_mb: number;
+  bitrate_kbps: number;
+  safe_zones: { top_px: number; bottom_px: number; right_px: number };
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  warnings: { code: string; message: string }[];
+  errors: { code: string; message: string }[];
+}
+
+export async function getPresets(
+  presetsDir?: string,
+): Promise<ExportPreset[]> {
+  return invoke("get_presets", { presetsDir });
+}
+
+export async function validateExport(params: {
+  durationMs: number;
+  width: number;
+  height: number;
+  platform: string;
+  presetsDir?: string;
+}): Promise<ValidationResult> {
+  return invoke("validate_export", params);
+}
+
+export async function exportVideo(params: {
+  inputVideo: string;
+  outputPath: string;
+  srtFile?: string;
+  templatePath?: string;
+  platform: string;
+  presetsDir?: string;
+}): Promise<string> {
+  return invoke("export_video", params);
+}

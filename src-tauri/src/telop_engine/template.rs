@@ -40,6 +40,43 @@ pub enum AnimationUnit {
     Word,
 }
 
+impl Default for TelopTemplate {
+    fn default() -> Self {
+        Self {
+            id: "none".to_string(),
+            name: "なし".to_string(),
+            description: "アニメーションなし".to_string(),
+            category: "basic".to_string(),
+            animation: TemplateAnimation {
+                unit: AnimationUnit::Character,
+                property: Some("opacity".to_string()),
+                properties: None,
+                from: None,
+                to: None,
+                keyframes: None,
+                duration_ms: 0,
+                delay_per_unit_ms: 0,
+                easing: "linear".to_string(),
+            },
+            default_style: TelopStyle {
+                font_family: "Noto Sans JP".to_string(),
+                font_size: 40.0,
+                font_weight: 900,
+                color: "#FFFFFF".to_string(),
+                outline: Some(crate::models::telop::OutlineStyle {
+                    enabled: true,
+                    color: "#000000".to_string(),
+                    width: 2.0,
+                }),
+                shadow: None,
+                position: None,
+                alignment: None,
+            },
+            preview_text: None,
+        }
+    }
+}
+
 /// Load a template from a JSON string
 pub fn load_template(json_str: &str) -> Result<TelopTemplate, String> {
     serde_json::from_str(json_str).map_err(|e| format!("Failed to parse template JSON: {e}"))

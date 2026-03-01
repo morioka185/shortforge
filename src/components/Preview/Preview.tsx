@@ -31,6 +31,14 @@ const PREVIEW_H = 480;
 
 const SCALE = PREVIEW_W / CANVAS_W;
 
+const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "webp", "bmp", "tiff"]);
+
+function isImageSource(source: string | undefined): boolean {
+  if (!source) return false;
+  const ext = source.split(".").pop()?.toLowerCase() ?? "";
+  return IMAGE_EXTENSIONS.has(ext);
+}
+
 export function Preview() {
   const { t } = useTranslation();
   const project = useProjectStore((s) => s.project);
@@ -99,6 +107,12 @@ export function Preview() {
       return null;
     }
   }, [videoClip?.source]);
+
+  // Detect if the current clip is a static image
+  const isImage = useMemo(
+    () => isImageSource(videoClip?.source),
+    [videoClip?.source],
+  );
 
   // Check if the video track is muted
   const videoTrackMuted = useMemo(() => {
@@ -398,7 +412,7 @@ export function Preview() {
         }}
         onClick={handleContainerClick}
       >
-        {/* Video frame */}
+        {/* Video / Image frame */}
         {videoSrc && !videoError ? (
           <div
             data-clip-id={videoClip!.id}
@@ -415,18 +429,30 @@ export function Preview() {
             }}
             onMouseDown={(e) => handleMouseDown(videoClip!.id, e)}
           >
-            <video
-              ref={videoRef}
-              src={videoSrc}
-              className="w-full h-full object-cover pointer-events-none"
-              muted={videoTrackMuted || masterMuted}
-              playsInline
-              preload="auto"
-              onError={() => {
-                console.error("Video load failed:", videoSrc);
-                setVideoError(true);
-              }}
-            />
+            {isImage ? (
+              <img
+                src={videoSrc}
+                className="w-full h-full object-cover pointer-events-none"
+                draggable={false}
+                onError={() => {
+                  console.error("Image load failed:", videoSrc);
+                  setVideoError(true);
+                }}
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                className="w-full h-full object-cover pointer-events-none"
+                muted={videoTrackMuted || masterMuted}
+                playsInline
+                preload="auto"
+                onError={() => {
+                  console.error("Video load failed:", videoSrc);
+                  setVideoError(true);
+                }}
+              />
+            )}
           </div>
         ) : videoError ? (
           <div

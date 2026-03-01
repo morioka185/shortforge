@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 import { save } from "@tauri-apps/plugin-dialog";
 import { Button } from "../Common/Button";
 import { PlatformPreset } from "./PlatformPreset";
-import type { ExportPreset, ValidationResult } from "../../lib/tauri";
+import type { ExportPreset, ValidationResult, AudioSourceParam } from "../../lib/tauri";
 import { getPresets, validateExport, exportVideo } from "../../lib/tauri";
 import { useProjectStore } from "../../stores/projectStore";
+import { useTimelineStore } from "../../stores/timelineStore";
 
 interface ExportDialogProps {
   open: boolean;
@@ -15,6 +17,7 @@ interface ExportDialogProps {
 type ExportState = "idle" | "validating" | "exporting" | "done" | "error";
 
 export function ExportDialog({ open, onClose }: ExportDialogProps) {
+  const { t } = useTranslation();
   const { project } = useProjectStore();
   const [presets, setPresets] = useState<ExportPreset[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
@@ -85,24 +88,43 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     try {
       // Find the first video clip's source path
       const videoTrack = project.tracks.find((t) => t.type === "video");
+      const firstClip = videoTrack?.clips?.[0];
       const inputVideo =
-        videoTrack?.clips?.[0] &&
-        typeof videoTrack.clips[0] === "object" &&
-        videoTrack.clips[0] !== null &&
-        "source_path" in videoTrack.clips[0]
-          ? (videoTrack.clips[0] as { source_path: string }).source_path
+        firstClip &&
+        typeof firstClip === "object" &&
+        firstClip !== null &&
+        "source" in firstClip
+          ? (firstClip as { source: string }).source
           : "";
 
       if (!inputVideo) {
         setExportState("error");
-        setErrorMessage("動画クリップが見つかりません");
+        setErrorMessage(t("exportDialog.noVideoClip"));
         return;
+      }
+
+      // Collect non-muted audio track clips
+      const timelineTracks = useTimelineStore.getState().tracks;
+      const audioSources: AudioSourceParam[] = [];
+      for (const track of timelineTracks) {
+        if (track.type === "audio" && !track.muted) {
+          for (const clip of track.clips) {
+            if (clip.source) {
+              audioSources.push({
+                path: clip.source,
+                startMs: clip.startMs,
+                endMs: clip.endMs,
+              });
+            }
+          }
+        }
       }
 
       await exportVideo({
         inputVideo,
         outputPath,
         platform: selectedPlatform,
+        audioSources: audioSources.length > 0 ? audioSources : undefined,
       });
 
       setExportState("done");
@@ -128,7 +150,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
       <div className="bg-gray-900 rounded-xl shadow-2xl w-[560px] max-h-[80vh] flex flex-col border border-gray-700">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
-          <h2 className="text-lg font-bold text-white">書き出し</h2>
+          <h2 className="text-lg font-bold text-white">{t("exportDialog.header")}</h2>
           <button
             onClick={handleClose}
             disabled={exportState === "exporting"}
@@ -143,7 +165,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
           {/* Platform selection */}
           <div>
             <h3 className="text-sm font-medium text-gray-300 mb-3">
-              プラットフォーム
+              {t("exportDialog.platform")}
             </h3>
             <div className="grid grid-cols-3 gap-3">
               {presets.map((preset) => (
@@ -184,7 +206,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
                 validation.warnings.length === 0 && (
                   <div className="p-3 rounded-lg bg-green-900/30 border border-green-700">
                     <span className="text-sm text-green-300">
-                      すべてのチェックに合格しました
+                      {t("exportDialog.allChecksPassed")}
                     </span>
                   </div>
                 )}
@@ -195,7 +217,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
           {exportState === "exporting" && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm text-gray-300">
-                <span>書き出し中...</span>
+                <span>{t("exportDialog.exporting")}</span>
                 <span>{progress}%</span>
               </div>
               <div className="w-full h-2 rounded-full bg-gray-700 overflow-hidden">
@@ -211,7 +233,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
           {exportState === "done" && (
             <div className="p-4 rounded-lg bg-green-900/30 border border-green-700 text-center">
               <p className="text-green-300 font-medium">
-                書き出しが完了しました
+                {t("exportDialog.exportCompleted")}
               </p>
             </div>
           )}
@@ -232,7 +254,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             onClick={handleClose}
             disabled={exportState === "exporting"}
           >
-            {exportState === "done" ? "閉じる" : "キャンセル"}
+            {exportState === "done" ? t("exportDialog.close") : t("exportDialog.cancel")}
           </Button>
           {exportState !== "done" && (
             <Button
@@ -245,7 +267,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
                 (validation !== null && !validation.valid)
               }
             >
-              {exportState === "exporting" ? "書き出し中..." : "書き出し開始"}
+              {exportState === "exporting" ? t("exportDialog.exporting") : t("exportDialog.startExport")}
             </Button>
           )}
         </div>

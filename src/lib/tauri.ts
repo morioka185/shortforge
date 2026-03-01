@@ -8,6 +8,17 @@ export async function getTemplates(
   return invoke("get_templates", { templatesDir });
 }
 
+export interface SubtitleCue {
+  index: number;
+  start_ms: number;
+  end_ms: number;
+  text: string;
+}
+
+export async function parseSrt(path: string): Promise<SubtitleCue[]> {
+  return invoke("parse_srt", { path });
+}
+
 export async function burnTelop(params: {
   inputVideo: string;
   srtFile: string;
@@ -57,6 +68,14 @@ export async function importMedia(
   return invoke("import_media", { project, mediaPath });
 }
 
+// Preview
+export async function extractFrame(
+  videoPath: string,
+  timeMs: number,
+): Promise<string> {
+  return invoke("extract_frame", { videoPath, timeMs });
+}
+
 // Export Engine
 export interface ExportPreset {
   platform: string;
@@ -96,6 +115,12 @@ export async function validateExport(params: {
   return invoke("validate_export", params);
 }
 
+export interface AudioSourceParam {
+  path: string;
+  startMs: number;
+  endMs: number;
+}
+
 export async function exportVideo(params: {
   inputVideo: string;
   outputPath: string;
@@ -103,8 +128,14 @@ export async function exportVideo(params: {
   templatePath?: string;
   platform: string;
   presetsDir?: string;
+  audioSources?: AudioSourceParam[];
 }): Promise<string> {
   return invoke("export_video", params);
+}
+
+// Font
+export async function listSystemFonts(): Promise<string[]> {
+  return invoke("list_system_fonts");
 }
 
 // Beat Sync

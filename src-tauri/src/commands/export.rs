@@ -1,5 +1,5 @@
 use crate::export_engine::preset::{ExportPreset, load_all_presets, load_preset_file};
-use crate::export_engine::renderer::{render_export, ExportProgress};
+use crate::export_engine::renderer::{render_export, AudioSource, ExportProgress};
 use crate::export_engine::validator::{validate_for_export, ValidationResult};
 use crate::models::telop::SubtitleCue;
 use crate::telop_engine::parser::parse_srt_file;
@@ -12,6 +12,13 @@ pub struct ExportProgressEvent {
     pub current_frame: u64,
     pub total_frames: u64,
     pub percent: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AudioSourceParam {
+    pub path: String,
+    pub start_ms: u64,
+    pub end_ms: u64,
 }
 
 #[tauri::command]
@@ -58,6 +65,7 @@ pub fn export_video(
     template_path: Option<String>,
     platform: String,
     presets_dir: Option<String>,
+    audio_sources: Option<Vec<AudioSourceParam>>,
 ) -> Result<String, String> {
     let dir = presets_dir.unwrap_or_else(|| {
         let manifest_dir = env!("CARGO_MANIFEST_DIR");
@@ -81,6 +89,16 @@ pub fn export_video(
         crate::telop_engine::template::TelopTemplate::default()
     };
 
+    let sources: Vec<AudioSource> = audio_sources
+        .unwrap_or_default()
+        .into_iter()
+        .map(|s| AudioSource {
+            path: s.path,
+            start_ms: s.start_ms,
+            end_ms: s.end_ms,
+        })
+        .collect();
+
     let progress_cb = move |progress: ExportProgress| {
         let _ = app.emit(
             "export-progress",
@@ -98,6 +116,7 @@ pub fn export_video(
         &cues,
         &template,
         &preset,
+        &sources,
         Some(&progress_cb),
     )?;
 

@@ -40,6 +40,7 @@ export function useTimeline() {
           id: "video-1",
           type: "video",
           label: "映像",
+          muted: false,
           clips: [clip],
         };
         addTrack(track);
@@ -77,6 +78,7 @@ export function useTimeline() {
           id: "telop-1",
           type: "telop",
           label: "テロップ",
+          muted: false,
           clips,
         };
         addTrack(track);
@@ -112,6 +114,7 @@ export function useTimeline() {
           id: "audio-1",
           type: "audio",
           label: "音声",
+          muted: false,
           clips: [clip],
         };
         addTrack(track);

@@ -10,7 +10,7 @@ interface ClipProps {
 type DragMode = "move" | "trim-start" | "trim-end" | null;
 
 export function Clip({ clip, zoom }: ClipProps) {
-  const { selectedClipId, selectClip, moveClip, trimClip } =
+  const { selectedClipId, selectClip, moveClip, trimClip, setEditingClipId } =
     useTimelineStore();
   const isSelected = selectedClipId === clip.id;
   const [dragMode, setDragMode] = useState<DragMode>(null);
@@ -60,8 +60,13 @@ export function Clip({ clip, zoom }: ClipProps) {
         }
       };
 
+      // Pause undo tracking so the entire drag is a single undo step
+      useTimelineStore.temporal.getState().pause();
+
       const handleMouseUp = () => {
         setDragMode(null);
+        // Resume undo tracking — the net change becomes one undo entry
+        useTimelineStore.temporal.getState().resume();
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
       };
@@ -74,6 +79,7 @@ export function Clip({ clip, zoom }: ClipProps) {
 
   return (
     <div
+      data-clip
       className={`absolute top-1 bottom-1 rounded flex items-stretch transition-shadow ${
         isSelected ? "ring-2 ring-white shadow-lg" : "hover:brightness-110"
       } ${dragMode ? "opacity-80" : ""}`}
@@ -85,6 +91,10 @@ export function Clip({ clip, zoom }: ClipProps) {
       onClick={(e) => {
         e.stopPropagation();
         selectClip(clip.id);
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        setEditingClipId(clip.id);
       }}
     >
       {/* Trim handle left */}

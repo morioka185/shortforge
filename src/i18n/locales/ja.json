@@ -1,0 +1,118 @@
+{
+  "app": {
+    "subtitle": "ショート動画特化型エディタ",
+    "newProject": "新規プロジェクト",
+    "newProjectName": "新しいプロジェクト",
+    "export": "書き出し"
+  },
+  "media": {
+    "header": "メディア",
+    "filterName": "メディア",
+    "loading": "読み込み中...",
+    "addMedia": "素材を追加",
+    "emptyMessage": "動画・画像・音声ファイルを\n追加してください",
+    "typeVideo": "動画",
+    "typeImage": "画像",
+    "typeAudio": "音声",
+    "delete": "削除"
+  },
+  "telop": {
+    "srtFilterName": "SRT字幕",
+    "srtTrackLabel": "テロップ (SRT)",
+    "srtImportHeader": "SRTインポート",
+    "srtImportButton": "SRTファイルを読み込み",
+    "srtImportedCount": "{{count}}件のテロップを追加しました",
+    "trackLabel": "テロップ",
+    "addHeader": "テロップ追加",
+    "textPlaceholder": "テキストを入力...",
+    "start": "開始",
+    "end": "終了",
+    "fromCurrent": "現在位置から",
+    "add": "追加"
+  },
+  "template": {
+    "header": "テンプレート",
+    "categoryBasic": "ベーシック",
+    "categoryDynamic": "ダイナミック",
+    "loading": "テンプレートを読み込み中...",
+    "loadError": "読み込みエラー: {{error}}",
+    "notFound": "テンプレートが見つかりません",
+    "selectPrompt": "テンプレートを選択してください"
+  },
+  "style": {
+    "header": "スタイル編集",
+    "positionSize": "位置・サイズ",
+    "scale": "拡大率: {{value}}%",
+    "fontSize": "フォントサイズ: {{value}}px",
+    "textColor": "テキスト色",
+    "outline": "縁取り",
+    "join": "結合",
+    "joinMiter": "マイター",
+    "joinRound": "ラウンド",
+    "joinBevel": "ベベル",
+    "weight": "太さ: {{value}}",
+    "font": "フォント",
+    "fontSelect": "フォントを選択",
+    "fontSearch": "フォント名で検索...",
+    "fontNotFound": "見つかりません",
+    "align": "整列",
+    "alignLeft": "左揃え",
+    "alignCenterH": "水平中央",
+    "alignRight": "右揃え",
+    "alignTop": "上揃え",
+    "alignCenterV": "垂直中央",
+    "alignBottom": "下揃え"
+  },
+  "preview": {
+    "header": "プレビュー",
+    "selectTemplate": "テンプレートを選択するとプレビューが表示されます",
+    "playing": "再生中...",
+    "play": "再生",
+    "textPlaceholder": "プレビューテキスト",
+    "videoLoadError": "動画の読み込みに失敗しました",
+    "addMedia": "メディアを追加してください",
+    "showSafeZone": "セーフゾーン表示",
+    "posScale": "拡大",
+    "resetPosition": "位置をリセット",
+    "mute": "ミュート",
+    "unmute": "ミュート解除"
+  },
+  "exportDialog": {
+    "header": "書き出し",
+    "platform": "プラットフォーム",
+    "allChecksPassed": "すべてのチェックに合格しました",
+    "exporting": "書き出し中...",
+    "exportCompleted": "書き出しが完了しました",
+    "noVideoClip": "動画クリップが見つかりません",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "startExport": "書き出し開始"
+  },
+  "timeline": {
+    "importToStart": "メディアをインポートして開始",
+    "trackVideo": "映像",
+    "trackTelop": "テロップ",
+    "trackAudio": "音声",
+    "mute": "ミュート",
+    "unmute": "ミュート解除",
+    "removeTrack": "トラックを削除"
+  },
+  "clipEdit": {
+    "header": "クリップ編集",
+    "setInTitle": "カーソル位置を開始点に設定 (I)",
+    "setOutTitle": "カーソル位置を終了点に設定 (O)",
+    "startIn": "開始 (IN)",
+    "endOut": "終了 (OUT)",
+    "cursorPosition": "カーソル位置",
+    "durationSec": "長さ (秒)",
+    "durationPlaceholder": "秒数",
+    "splitAtPosition": "この位置で分割",
+    "splitDescription": "カーソル位置 ({{timecode}}) でクリップを2つに分割します",
+    "cancel": "キャンセル",
+    "apply": "適用",
+    "delete": "削除"
+  },
+  "platformPreset": {
+    "maxDuration": "最大 {{sec}}秒"
+  }
+}

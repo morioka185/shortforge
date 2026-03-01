@@ -1,0 +1,118 @@
+{
+  "app": {
+    "subtitle": "Short Video Editor",
+    "newProject": "New Project",
+    "newProjectName": "New Project",
+    "export": "Export"
+  },
+  "media": {
+    "header": "Media",
+    "filterName": "Media",
+    "loading": "Loading...",
+    "addMedia": "Add Media",
+    "emptyMessage": "Add video, image, or\naudio files",
+    "typeVideo": "Video",
+    "typeImage": "Image",
+    "typeAudio": "Audio",
+    "delete": "Delete"
+  },
+  "telop": {
+    "srtFilterName": "SRT Subtitle",
+    "srtTrackLabel": "Telop (SRT)",
+    "srtImportHeader": "SRT Import",
+    "srtImportButton": "Import SRT File",
+    "srtImportedCount": "{{count}} telop(s) added",
+    "trackLabel": "Telop",
+    "addHeader": "Add Telop",
+    "textPlaceholder": "Enter text...",
+    "start": "Start",
+    "end": "End",
+    "fromCurrent": "From Current",
+    "add": "Add"
+  },
+  "template": {
+    "header": "Templates",
+    "categoryBasic": "Basic",
+    "categoryDynamic": "Dynamic",
+    "loading": "Loading templates...",
+    "loadError": "Load error: {{error}}",
+    "notFound": "No templates found",
+    "selectPrompt": "Please select a template"
+  },
+  "style": {
+    "header": "Style Editor",
+    "positionSize": "Position & Size",
+    "scale": "Scale: {{value}}%",
+    "fontSize": "Font Size: {{value}}px",
+    "textColor": "Text Color",
+    "outline": "Outline",
+    "join": "Join",
+    "joinMiter": "Miter",
+    "joinRound": "Round",
+    "joinBevel": "Bevel",
+    "weight": "Weight: {{value}}",
+    "font": "Font",
+    "fontSelect": "Select a font",
+    "fontSearch": "Search fonts...",
+    "fontNotFound": "Not found",
+    "align": "Align",
+    "alignLeft": "Align Left",
+    "alignCenterH": "Center Horizontally",
+    "alignRight": "Align Right",
+    "alignTop": "Align Top",
+    "alignCenterV": "Center Vertically",
+    "alignBottom": "Align Bottom"
+  },
+  "preview": {
+    "header": "Preview",
+    "selectTemplate": "Select a template to see preview",
+    "playing": "Playing...",
+    "play": "Play",
+    "textPlaceholder": "Preview text",
+    "videoLoadError": "Failed to load video",
+    "addMedia": "Please add media",
+    "showSafeZone": "Show Safe Zone",
+    "posScale": "Scale",
+    "resetPosition": "Reset Position",
+    "mute": "Mute",
+    "unmute": "Unmute"
+  },
+  "exportDialog": {
+    "header": "Export",
+    "platform": "Platform",
+    "allChecksPassed": "All checks passed",
+    "exporting": "Exporting...",
+    "exportCompleted": "Export completed",
+    "noVideoClip": "No video clip found",
+    "close": "Close",
+    "cancel": "Cancel",
+    "startExport": "Start Export"
+  },
+  "timeline": {
+    "importToStart": "Import media to start",
+    "trackVideo": "Video",
+    "trackTelop": "Telop",
+    "trackAudio": "Audio",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "removeTrack": "Remove track"
+  },
+  "clipEdit": {
+    "header": "Edit Clip",
+    "setInTitle": "Set IN point at cursor (I)",
+    "setOutTitle": "Set OUT point at cursor (O)",
+    "startIn": "Start (IN)",
+    "endOut": "End (OUT)",
+    "cursorPosition": "Cursor Position",
+    "durationSec": "Duration (sec)",
+    "durationPlaceholder": "seconds",
+    "splitAtPosition": "Split at Position",
+    "splitDescription": "Split clip at cursor ({{timecode}})",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "delete": "Delete"
+  },
+  "platformPreset": {
+    "maxDuration": "Max {{sec}}s"
+  }
+}

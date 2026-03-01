@@ -6,10 +6,16 @@ export function useKeyboardShortcuts() {
     togglePlayPause,
     zoomIn,
     zoomOut,
+    editingClipId,
+    selectedClipId,
+    deleteClip,
   } = useTimelineStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle shortcuts while clip edit dialog is open
+      if (editingClipId) return;
+
       const target = e.target as HTMLElement;
       // Don't handle shortcuts when typing in inputs
       if (
@@ -56,9 +62,16 @@ export function useKeyboardShortcuts() {
         zoomOut();
         return;
       }
+
+      // Delete / Backspace = delete selected clip
+      if ((e.key === "Delete" || e.key === "Backspace") && !isMod && selectedClipId) {
+        e.preventDefault();
+        deleteClip(selectedClipId);
+        return;
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [togglePlayPause, zoomIn, zoomOut]);
+  }, [togglePlayPause, zoomIn, zoomOut, editingClipId, selectedClipId, deleteClip]);
 }

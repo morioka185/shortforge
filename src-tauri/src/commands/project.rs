@@ -49,6 +49,16 @@ pub fn load_project(path: String) -> Result<ShortForgeProject, String> {
     serde_json::from_str(&content).map_err(|e| format!("Failed to parse project: {e}"))
 }
 
+fn is_image_extension(path: &str) -> bool {
+    let lower = path.to_lowercase();
+    matches!(
+        std::path::Path::new(&lower)
+            .extension()
+            .and_then(|e| e.to_str()),
+        Some("png" | "jpg" | "jpeg" | "gif" | "webp" | "bmp" | "tiff")
+    )
+}
+
 #[command]
 pub fn probe_media(path: String) -> Result<MediaInfo, String> {
     ffmpeg_next::init().map_err(|e| format!("Failed to init ffmpeg: {e}"))?;
@@ -59,28 +69,37 @@ pub fn probe_media(path: String) -> Result<MediaInfo, String> {
     let video_stream = ctx.streams().best(ffmpeg_next::media::Type::Video);
     let audio_stream = ctx.streams().best(ffmpeg_next::media::Type::Audio);
 
+    let is_image = is_image_extension(&path);
+
     let (width, height, fps) = if let Some(vs) = video_stream {
         let decoder = ffmpeg_next::codec::Context::from_parameters(vs.parameters())
             .and_then(|c| c.decoder().video())
             .map_err(|e| format!("Failed to decode video info: {e}"))?;
 
-        let fps_rat = vs.avg_frame_rate();
-        let fps = if fps_rat.denominator() > 0 {
-            fps_rat.numerator() as f64 / fps_rat.denominator() as f64
+        if is_image {
+            (decoder.width(), decoder.height(), 0.0)
         } else {
-            30.0
-        };
-
-        (decoder.width(), decoder.height(), fps)
+            let fps_rat = vs.avg_frame_rate();
+            let fps = if fps_rat.denominator() > 0 {
+                fps_rat.numerator() as f64 / fps_rat.denominator() as f64
+            } else {
+                30.0
+            };
+            (decoder.width(), decoder.height(), fps)
+        }
     } else {
         (0, 0, 0.0)
     };
 
-    let duration = ctx.duration();
-    let duration_ms = if duration > 0 {
-        (duration as f64 / ffmpeg_next::ffi::AV_TIME_BASE as f64 * 1000.0) as u64
-    } else {
+    let duration_ms = if is_image {
         0
+    } else {
+        let duration = ctx.duration();
+        if duration > 0 {
+            (duration as f64 / ffmpeg_next::ffi::AV_TIME_BASE as f64 * 1000.0) as u64
+        } else {
+            0
+        }
     };
 
     Ok(MediaInfo {
@@ -89,7 +108,7 @@ pub fn probe_media(path: String) -> Result<MediaInfo, String> {
         height,
         duration_ms,
         fps,
-        has_audio: audio_stream.is_some(),
+        has_audio: if is_image { false } else { audio_stream.is_some() },
     })
 }
 
@@ -147,4 +166,78 @@ pub fn import_media(
     }
 
     Ok(project)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_image_extension_png() {
+        assert!(is_image_extension("photo.png"));
+    }
+
+    #[test]
+    fn test_is_image_extension_jpg() {
+        assert!(is_image_extension("photo.jpg"));
+    }
+
+    #[test]
+    fn test_is_image_extension_jpeg() {
+        assert!(is_image_extension("photo.jpeg"));
+    }
+
+    #[test]
+    fn test_is_image_extension_gif() {
+        assert!(is_image_extension("animation.gif"));
+    }
+
+    #[test]
+    fn test_is_image_extension_webp() {
+        assert!(is_image_extension("image.webp"));
+    }
+
+    #[test]
+    fn test_is_image_extension_bmp() {
+        assert!(is_image_extension("bitmap.bmp"));
+    }
+
+    #[test]
+    fn test_is_image_extension_tiff() {
+        assert!(is_image_extension("scan.tiff"));
+    }
+
+    #[test]
+    fn test_is_image_extension_case_insensitive() {
+        assert!(is_image_extension("PHOTO.PNG"));
+        assert!(is_image_extension("Image.JPG"));
+        assert!(is_image_extension("pic.Jpeg"));
+    }
+
+    #[test]
+    fn test_is_image_extension_video_not_image() {
+        assert!(!is_image_extension("video.mp4"));
+        assert!(!is_image_extension("movie.mov"));
+        assert!(!is_image_extension("clip.webm"));
+        assert!(!is_image_extension("film.avi"));
+    }
+
+    #[test]
+    fn test_is_image_extension_audio_not_image() {
+        assert!(!is_image_extension("song.mp3"));
+        assert!(!is_image_extension("track.wav"));
+        assert!(!is_image_extension("audio.aac"));
+        assert!(!is_image_extension("music.m4a"));
+    }
+
+    #[test]
+    fn test_is_image_extension_no_extension() {
+        assert!(!is_image_extension("noext"));
+    }
+
+    #[test]
+    fn test_is_image_extension_with_path() {
+        assert!(is_image_extension("/Users/test/photos/image.png"));
+        assert!(is_image_extension("C:\\Users\\test\\photo.jpg"));
+    }
 }

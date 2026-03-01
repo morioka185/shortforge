@@ -1,9 +1,15 @@
+use crate::models::telop::SubtitleCue;
 use crate::telop_engine::parser;
 use crate::telop_engine::renderer;
 use crate::telop_engine::template;
 use crate::video_core::decoder::VideoDecoder;
 use crate::video_core::encoder::VideoEncoder;
 use tauri::command;
+
+#[command]
+pub fn parse_srt(path: String) -> Result<Vec<SubtitleCue>, String> {
+    parser::parse_srt_file(&path)
+}
 
 #[command]
 pub fn get_templates(templates_dir: Option<String>) -> Result<Vec<template::TelopTemplate>, String> {

@@ -1,4 +1,5 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useTimelineStore } from "../../stores/timelineStore";
 import { Track } from "./Track";
 import { Playhead } from "./Playhead";
@@ -7,6 +8,7 @@ import { BeatMarkers } from "./BeatMarkers";
 import { msToTimecode } from "../../lib/time";
 
 export function Timeline() {
+  const { t } = useTranslation();
   const {
     tracks,
     currentTimeMs,
@@ -25,22 +27,67 @@ export function Timeline() {
   } = useTimelineStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [rulerDragging, setRulerDragging] = useState(false);
 
-  const handleTimelineClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+  /** Convert a mouse event x to time in ms, relative to the scroll container */
+  const clientXToMs = useCallback(
+    (clientX: number) => {
       const container = containerRef.current;
-      if (!container) return;
-
+      if (!container) return 0;
       const rect = container.getBoundingClientRect();
       const scrollLeft = container.scrollLeft;
-      const x = e.clientX - rect.left + scrollLeft - 96; // 96px = track label width
-      const timeMs = (x / (100 * zoom)) * 1000;
-      setCurrentTime(Math.max(0, Math.min(timeMs, durationMs)));
+      const px = clientX - rect.left + scrollLeft - 96; // 96px = track label width
+      return Math.max(0, Math.min((px / (100 * zoom)) * 1000, durationMs));
     },
-    [zoom, durationMs, setCurrentTime],
+    [zoom, durationMs],
   );
 
-  // Generate time ruler marks
+  // --- Ruler drag: mousedown on ruler starts scrubbing ---
+  const handleRulerMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setRulerDragging(true);
+      setCurrentTime(clientXToMs(e.clientX));
+    },
+    [clientXToMs, setCurrentTime],
+  );
+
+  useEffect(() => {
+    if (!rulerDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setCurrentTime(clientXToMs(e.clientX));
+    };
+    const handleMouseUp = () => {
+      setRulerDragging(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [rulerDragging, clientXToMs, setCurrentTime]);
+
+  // --- Track area click: seek (fallback when not clicking a clip) ---
+  const handleTrackAreaClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      // Only seek if the click target is the track background, not a clip
+      const target = e.target as HTMLElement;
+      if (target.closest("[data-clip]")) return;
+      setCurrentTime(clientXToMs(e.clientX));
+    },
+    [clientXToMs, setCurrentTime],
+  );
+
+  // Playhead scrub callback (from the Playhead component)
+  const handlePlayheadScrub = useCallback(
+    (ms: number) => setCurrentTime(ms),
+    [setCurrentTime],
+  );
+
+  // --- Time ruler marks ---
   const totalWidthPx = (durationMs / 1000) * 100 * zoom;
   const intervalSec = zoom > 2 ? 1 : zoom > 0.5 ? 5 : 10;
   const marks: number[] = [];
@@ -50,9 +97,10 @@ export function Timeline() {
 
   const trackHeight = tracks.length * 40 + 24; // 40px per track + ruler
   const hasAudio = waveform.length > 0;
+  const playheadHeight = trackHeight + (hasAudio ? 40 : 0);
 
   return (
-    <div className="flex flex-col bg-gray-900 border-t border-gray-700">
+    <div className="flex flex-col bg-gray-900 border-t border-gray-700 select-none">
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 border-b border-gray-700">
         <button
@@ -106,34 +154,47 @@ export function Timeline() {
       {/* Timeline content */}
       <div
         ref={containerRef}
+        data-timeline-scroll
         className="overflow-x-auto overflow-y-auto relative"
         style={{ maxHeight: "240px" }}
-        onClick={handleTimelineClick}
       >
-        {/* Time ruler */}
-        <div className="flex sticky top-0 z-10">
+        {/* Time ruler — draggable for scrubbing */}
+        <div className="flex sticky top-0 z-20">
           <div className="w-24 flex-shrink-0 bg-gray-800 border-r border-gray-700" />
           <div
-            className="relative h-6 bg-gray-800 border-b border-gray-600"
+            className="relative h-7 bg-gray-800 border-b border-gray-600 cursor-crosshair"
             style={{ width: `${totalWidthPx}px` }}
+            onMouseDown={handleRulerMouseDown}
           >
             {marks.map((sec) => (
               <div
                 key={sec}
-                className="absolute top-0 h-full"
+                className="absolute top-0 h-full pointer-events-none"
                 style={{ left: `${sec * 100 * zoom}px` }}
               >
-                <div className="w-px h-2 bg-gray-500" />
+                <div className="w-px h-3 bg-gray-500" />
                 <span className="text-[9px] text-gray-500 ml-0.5">
                   {msToTimecode(sec * 1000)}
                 </span>
               </div>
             ))}
+
+            {/* Ruler playhead indicator (red line at current position) */}
+            <div
+              className="absolute top-0 h-full pointer-events-none"
+              style={{ left: `${(currentTimeMs / 1000) * 100 * zoom}px` }}
+            >
+              <div className="w-0.5 h-full bg-red-500" />
+            </div>
           </div>
         </div>
 
         {/* Tracks */}
-        <div className="relative" style={{ minWidth: `${totalWidthPx + 96}px` }}>
+        <div
+          className="relative"
+          style={{ minWidth: `${totalWidthPx + 96}px` }}
+          onClick={handleTrackAreaClick}
+        >
           {tracks.map((track) => (
             <Track key={track.id} track={track} zoom={zoom} />
           ))}
@@ -142,7 +203,9 @@ export function Timeline() {
           {hasAudio && (
             <div className="flex">
               <div className="w-24 flex-shrink-0 bg-gray-800 border-r border-gray-700 flex items-center px-2">
-                <span className="text-xs text-gray-400 truncate">Waveform</span>
+                <span className="text-xs text-gray-400 truncate">
+                  Waveform
+                </span>
               </div>
               <div
                 className="relative h-10 bg-gray-850"
@@ -168,19 +231,21 @@ export function Timeline() {
 
           {tracks.length === 0 && !hasAudio && (
             <div className="flex items-center justify-center h-20 text-gray-500 text-sm">
-              メディアをインポートして開始
+              {t("timeline.importToStart")}
             </div>
           )}
 
           {/* Playhead overlay */}
           <div
             className="absolute top-0 left-24"
-            style={{ height: `${trackHeight + (hasAudio ? 40 : 0)}px` }}
+            style={{ height: `${playheadHeight}px` }}
           >
             <Playhead
               currentTimeMs={currentTimeMs}
               zoom={zoom}
-              height={trackHeight + (hasAudio ? 40 : 0)}
+              height={playheadHeight}
+              onScrub={handlePlayheadScrub}
+              durationMs={durationMs}
             />
           </div>
         </div>

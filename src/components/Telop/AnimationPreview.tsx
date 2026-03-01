@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useTelopStore } from "../../stores/telopStore";
 
 export function AnimationPreview() {
+  const { t } = useTranslation();
   const { getSelectedTemplate, customStyle, previewText, setPreviewText } =
     useTelopStore();
   const template = getSelectedTemplate();
@@ -46,7 +48,7 @@ export function AnimationPreview() {
     return (
       <div className="flex items-center justify-center h-64 bg-gray-900 rounded-lg">
         <span className="text-gray-500 text-sm">
-          テンプレートを選択するとプレビューが表示されます
+          {t("preview.selectTemplate")}
         </span>
       </div>
     );
@@ -58,7 +60,7 @@ export function AnimationPreview() {
   return (
     <div className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider px-3">
-        プレビュー
+        {t("preview.header")}
       </h3>
 
       {/* Preview Area */}
@@ -110,7 +112,7 @@ export function AnimationPreview() {
           onClick={play}
           className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
         >
-          {isPlaying ? "再生中..." : "再生"}
+          {isPlaying ? t("preview.playing") : t("preview.play")}
         </button>
         <div className="flex-1 bg-gray-700 rounded-full h-1.5">
           <div
@@ -127,7 +129,7 @@ export function AnimationPreview() {
           value={previewText}
           onChange={(e) => setPreviewText(e.target.value)}
           className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white placeholder-gray-500"
-          placeholder="プレビューテキスト"
+          placeholder={t("preview.textPlaceholder")}
         />
       </div>
     </div>

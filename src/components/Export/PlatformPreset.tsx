@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ExportPreset } from "../../lib/tauri";
 
 interface PlatformPresetProps {
@@ -17,6 +18,7 @@ export function PlatformPreset({
   selected,
   onSelect,
 }: PlatformPresetProps) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={() => onSelect(preset.platform)}
@@ -41,7 +43,7 @@ export function PlatformPreset({
           {preset.resolution.width}x{preset.resolution.height}
         </div>
         <div>{preset.fps}fps / {preset.bitrate_kbps}kbps</div>
-        <div>最大 {preset.max_duration_sec}秒</div>
+        <div>{t("platformPreset.maxDuration", { sec: preset.max_duration_sec })}</div>
       </div>
     </button>
   );

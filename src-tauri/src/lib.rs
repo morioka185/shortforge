@@ -14,6 +14,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::telop::get_templates,
             commands::telop::burn_telop,
+            commands::telop::parse_srt,
             commands::project::create_project,
             commands::project::save_project,
             commands::project::load_project,
@@ -27,6 +28,7 @@ pub fn run() {
             commands::beat_sync::detect_beats,
             commands::beat_sync::get_waveform,
             commands::beat_sync::snap_time_to_beat,
+            commands::font::list_system_fonts,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

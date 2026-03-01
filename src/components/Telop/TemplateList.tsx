@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useTelopStore } from "../../stores/telopStore";
 import { getTemplates } from "../../lib/tauri";
 import type { TelopTemplate } from "../../types/telop";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  basic: "ベーシック",
-  dynamic: "ダイナミック",
-};
-
 export function TemplateList() {
+  const { t } = useTranslation();
   const { templates, selectedTemplateId, setTemplates, setSelectedTemplate } =
     useTelopStore();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    basic: t("template.categoryBasic"),
+    dynamic: t("template.categoryDynamic"),
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -43,7 +45,7 @@ export function TemplateList() {
   return (
     <div className="flex flex-col gap-3 p-3">
       <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
-        テンプレート
+        {t("template.header")}
       </h3>
       {Object.entries(grouped).map(([category, items]) => (
         <div key={category}>
@@ -71,13 +73,15 @@ export function TemplateList() {
         </div>
       ))}
       {loading && (
-        <p className="text-xs text-gray-500">テンプレートを読み込み中...</p>
+        <p className="text-xs text-gray-500">{t("template.loading")}</p>
       )}
       {!loading && error && (
-        <p className="text-xs text-red-400">読み込みエラー: {error}</p>
+        <p className="text-xs text-red-400">
+          {t("template.loadError", { error })}
+        </p>
       )}
       {!loading && !error && templates.length === 0 && (
-        <p className="text-xs text-gray-500">テンプレートが見つかりません</p>
+        <p className="text-xs text-gray-500">{t("template.notFound")}</p>
       )}
     </div>
   );
